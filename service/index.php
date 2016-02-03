@@ -7,7 +7,7 @@ if(defined('RESCALE_SOURCE') === false) {
 }
 
 if(defined('RESCALE_TARGET') === false) {
-	define('RESCALE_TARGET', dirname(__FILE__) . '/temp');
+	define('RESCALE_TARGET', dirname(dirname(__FILE__)) . '/temp');
 }
 
 if(defined('RESCALE_QUALITY_JPEG') === false) {

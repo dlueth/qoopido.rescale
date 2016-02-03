@@ -71,7 +71,7 @@ class Cache {
 		}
 
 		// remove thumbnails that have not been used for the last 2 weeks
-		$files = \Rescale\Filesystem::find(RESCALE_TARGET, '.*(?<!\.meta)$', \Rescale\Filesystem::MATCH_FILES | \Rescale\Filesystem::MODE_RECURSIVE);
+		$files = \Rescale\Filesystem::find(RESCALE_TARGET, '.*(?<!\.meta|\.gitignore)$', \Rescale\Filesystem::MATCH_FILES | \Rescale\Filesystem::MODE_RECURSIVE);
 
 		foreach($files as $file) {
 			$file = RESCALE_TARGET . '/' . $file;
