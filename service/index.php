@@ -3,7 +3,7 @@ date_default_timezone_set('Europe/Berlin');
 ignore_user_abort(true);
 
 if(defined('RESCALE_SOURCE') === false) {
-	define('RESCALE_SOURCE', dirname(dirname(__FILE__)));
+	define('RESCALE_SOURCE', $_SERVER['DOCUMENT_ROOT']);
 }
 
 if(defined('RESCALE_TARGET') === false) {
