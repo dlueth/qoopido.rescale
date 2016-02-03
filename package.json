@@ -16,8 +16,8 @@
     "url": "https://github.com/dlueth/qoopido.rescale/issues"
   },
   "license": "(MIT OR GPL-3.0+)",
-  "main": "dist/rescale.js",
-  "filename": "rescale.js",
+  "main": "dist/main.js",
+  "filename": "main.js",
   "autoupdate": {
     "source": "git",
     "target": "git://github.com/dlueth/qoopido.rescale.git",

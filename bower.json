@@ -6,7 +6,7 @@
     "Dirk Lueth <info@qoopido.com>"
   ],
   "description": "Powerful & lightweight lazyloading responsive image solution using microdata in JavaScript and PHP",
-  "main": "dist/rescale.js",
+  "main": "dist/main.js",
   "moduleType": [
     "globals"
   ],
