@@ -1,0 +1,33 @@
+{
+  "name": "qoopido.rescale",
+  "version": "1.0.0",
+  "homepage": "https://github.com/dlueth/qoopido.rescale",
+  "authors": [
+    "Dirk Lueth <info@qoopido.com>"
+  ],
+  "description": "Powerful & lightweight lazyloading responsive image solution using microdata in JavaScript and PHP",
+  "main": "dist/rescale.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "image",
+    "images",
+    "lazyload",
+    "responsive",
+    "adaptive",
+    "dynamic",
+    "microdata",
+    "mediaquery",
+    "selector",
+    "js",
+    "javascript",
+    "script",
+    "lightweight",
+    "PHP"
+  ],
+  "license": "(MIT OR GPL-3.0+)",
+  "ignore": [
+    "node_modules"
+  ]
+}

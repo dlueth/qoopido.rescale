@@ -1,0 +1,76 @@
+{
+  "name": "qoopido.rescale",
+  "title": "Qoopido.rescale",
+  "description": "Powerful & lightweight lazyloading responsive image solution using microdata in JavaScript and PHP",
+  "version": "1.0.0",
+  "homepage": "https://github.com/dlueth/qoopido.rescale",
+  "author": {
+    "name": "Dirk Lueth",
+    "email": "info@qoopido.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dlueth/qoopido.rescale.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dlueth/qoopido.rescale/issues"
+  },
+  "license": "(MIT OR GPL-3.0+)",
+  "main": "dist/rescale.js",
+  "filename": "rescale.js",
+  "autoupdate": {
+    "source": "git",
+    "target": "git://github.com/dlueth/qoopido.rescale.git",
+    "basePath": "/dist",
+    "files": [
+      "**/*.js"
+    ]
+  },
+  "keywords": [
+    "image",
+    "images",
+    "lazyload",
+    "responsive",
+    "adaptive",
+    "dynamic",
+    "microdata",
+    "mediaquery",
+    "selector",
+    "js",
+    "javascript",
+    "script",
+    "lightweight",
+    "PHP"
+  ],
+  "devDependencies": {
+    "del": "^2.0.2",
+    "gulp": "^3.9.0",
+    "gulp-bump": "^1.0.0",
+    "gulp-chmod": "^1.2.0",
+    "gulp-eslint": "^1.0.0",
+    "gulp-insert": "^0.5.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-load-plugins": "^1.0.0",
+    "gulp-plumber": "^1.0.1",
+    "gulp-size": "^2.0.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.4.2",
+    "gulp-util": "^3.0.6",
+    "require-dir": "^0.3.0",
+    "run-sequence": "^1.1.4"
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "rules": {
+      "no-cond-assign": 0
+    },
+    "env": {
+      "browser": true
+    },
+    "globals": {
+      "demand": true,
+      "provide": true,
+      "ga": true
+    }
+  }
+}
