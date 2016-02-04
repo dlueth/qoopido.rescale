@@ -23,7 +23,7 @@
 				i = 0, candidate, image, boundingbox, dimensions, url;
 
 			for(; candidate = properties.candidates[i]; i++) {
-				if((!candidate.mql || candidate.mql.matches) && (!candidate.selector || document.querySelector(candidate.selector))) {
+				if((!candidate.mql || candidate.mql.matches) && (!candidate.selector || checkSelector.call(self, candidate.selector))) {
 					image = properties.image;
 
 					if(properties.visible) {
@@ -50,6 +50,24 @@
 			}
 
 			setRatio.call(self);
+		}
+
+		function checkSelector(selector) {
+			var self    = this,
+				matches = document.querySelectorAll(selector),
+				element, i, match;
+
+			if(matches.length) {
+				element = self.element;
+
+				for(i = 0; match = matches[i]; i++) {
+					if(match === element) {
+						return true;
+					}
+				}
+			}
+
+			return self.getParent(selector);
 		}
 
 		function processSources() {
