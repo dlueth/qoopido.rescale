@@ -10,12 +10,16 @@ if(defined('RESCALE_TARGET') === false) {
 	define('RESCALE_TARGET', dirname(dirname(__FILE__)) . '/temp');
 }
 
+if(defined('RESCALE_LIMIT_DPR') === false) {
+	define('RESCALE_LIMIT_DPR', 2);
+}
+
 if(defined('RESCALE_QUALITY_JPEG') === false) {
 	define('RESCALE_QUALITY_JPEG', 70);
 }
 
 if(defined('RESCALE_QUALITY_PNG') === false) {
-	define('RESCALE_QUALITY_PNG', 5);
+	define('RESCALE_QUALITY_PNG', 6);
 }
 
 if(defined('RESCALE_QUALITY_GIF') === false) {
@@ -64,13 +68,13 @@ try {
 		$path   = (isset($parameter['file']) && !empty($parameter['file'])) ? (string) $parameter['file'] : NULL;
 		$width  = (isset($parameter['width']) && !empty($parameter['width']) && is_numeric($parameter['width'])) ? (int) $parameter['width'] : NULL;
 		$height = (isset($parameter['height']) && !empty($parameter['height']) && is_numeric($parameter['height'])) ? (int) $parameter['height'] : NULL;
-		$dpr    = (isset($parameter['dpr']) && !empty($parameter['dpr']) && is_numeric($parameter['dpr'])) ? (float) $parameter['dpr'] : NULL;
+		$dpr    = (isset($parameter['dpr']) && !empty($parameter['dpr']) && is_numeric($parameter['dpr'])) ? (int) $parameter['dpr'] : NULL;
 		$source = ($path !== NULL) ? RESCALE_SOURCE . $path : NULL;
 
 		if($source !== NULL && is_file($source) && $width !== NULL && $height !== NULL && $dpr !== NULL) {
 			$type       = strtolower(preg_replace('/^.+\.(jp(e?)g|png|gif)$/i', '\1', $path));
 			$type       = ($type === 'jpg') ? 'jpeg' : $type;
-			$dpr        = min(2, round($dpr) / 100);
+			$dpr        = min(RESCALE_LIMIT_DPR, round($dpr) / 100);
 			$image      = new \Rescale\Image($source);
 			$dimensions = normalizeDimensions($width * $dpr, $height * $dpr, $image->width, $image->height);
 			$cache      = new \Rescale\Cache($path, $type, $dimensions);
@@ -96,11 +100,11 @@ try {
 			}
 
 			header('Accept-Ranges: bytes');
-			header('Cache-Control: max-age=315360000');
+			header('Cache-Control: max-age=86400');
 			header('Cache-Control: public', false);
 			header('Content-Length: ' . $cache->size);
 			header('Content-Type: image/' . $type);
-			header('Expires: ' . gmdate('r', strtotime('+10 years')) . ' GMT');
+			header('Expires: ' . gmdate('r', strtotime('+1 day')) . ' GMT');
 			header('Last-Modified: ' . gmdate('r', $cache->modified) . ' GMT');
 			header('pragma: public');
 
