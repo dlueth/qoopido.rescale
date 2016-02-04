@@ -62,7 +62,7 @@ function normalizeDimensions($targetWidth, $targetHeight, $sourceWidth, $sourceH
 spl_autoload_register('autoloader');
 
 try {
-	$parameter = $_GET['resize'];
+	$parameter = $_GET['rescale'];
 
 	if(isset($parameter) && is_array($parameter)) {
 		$path   = (isset($parameter['file']) && !empty($parameter['file'])) ? (string) $parameter['file'] : NULL;
