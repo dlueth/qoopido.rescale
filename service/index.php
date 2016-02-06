@@ -59,25 +59,43 @@ function normalizeDimensions($targetWidth, $targetHeight, $sourceWidth, $sourceH
 	return $dimensions;
 }
 
+function normalizeQuality($type, $quality) {
+	switch($type) {
+		case 'jpeg':
+			return ($quality === NULL) ? RESCALE_QUALITY_JPEG : max(0, min(100, $quality));
+
+			break;
+		case 'png':
+			return ($quality === NULL) ? RESCALE_QUALITY_PNG : max(0, min(9, $quality));
+
+			break;
+		case 'gif':
+			return ($quality === NULL) ? RESCALE_QUALITY_GIF : max(1, min(256, $quality));
+			break;
+	}
+}
+
 spl_autoload_register('autoloader');
 
 try {
 	$parameter = $_GET['rescale'];
 
 	if(isset($parameter) && is_array($parameter)) {
-		$path   = (isset($parameter['file']) && !empty($parameter['file'])) ? (string) $parameter['file'] : NULL;
-		$width  = (isset($parameter['width']) && !empty($parameter['width']) && is_numeric($parameter['width'])) ? (int) $parameter['width'] : NULL;
-		$height = (isset($parameter['height']) && !empty($parameter['height']) && is_numeric($parameter['height'])) ? (int) $parameter['height'] : NULL;
-		$dpr    = (isset($parameter['dpr']) && !empty($parameter['dpr']) && is_numeric($parameter['dpr'])) ? (int) $parameter['dpr'] : NULL;
-		$source = ($path !== NULL) ? RESCALE_SOURCE . $path : NULL;
+		$path    = (isset($parameter['file']) && !empty($parameter['file'])) ? (string) $parameter['file'] : NULL;
+		$width   = (isset($parameter['width']) && !empty($parameter['width']) && is_numeric($parameter['width'])) ? (int) $parameter['width'] : NULL;
+		$height  = (isset($parameter['height']) && !empty($parameter['height']) && is_numeric($parameter['height'])) ? (int) $parameter['height'] : NULL;
+		$dpr     = (isset($parameter['dpr']) && !empty($parameter['dpr']) && is_numeric($parameter['dpr'])) ? (int) $parameter['dpr'] : NULL;
+		$quality = (isset($parameter['quality']) && !empty($parameter['quality']) && is_numeric($parameter['quality'])) ? (int) $parameter['quality'] : NULL;
+		$source  = ($path !== NULL) ? RESCALE_SOURCE . $path : NULL;
 
 		if($source !== NULL && is_file($source) && $width !== NULL && $height !== NULL && $dpr !== NULL) {
-			$type       = strtolower(preg_replace('/^.+\.(jp(e?)g|png|gif)$/i', '\1', $path));
+			$type       = strtolower(preg_replace('/^.+\.(jpe?g|png|gif)$/i', '\1', $path));
 			$type       = ($type === 'jpg') ? 'jpeg' : $type;
 			$dpr        = min(RESCALE_LIMIT_DPR, round($dpr) / 100);
 			$image      = new \Rescale\Image($source);
 			$dimensions = normalizeDimensions($width * $dpr, $height * $dpr, $image->width, $image->height);
-			$cache      = new \Rescale\Cache($path, $type, $dimensions);
+			$quality    = normalizeQuality($type, $quality);
+			$cache      = new \Rescale\Cache($path, $type, $dimensions, $quality);
 
 			if(($data = $cache->get()) === false) {
 				$image
@@ -86,13 +104,13 @@ try {
 
 				switch($type) {
 					case 'jpeg':
-						$data = $image->get('jpeg', true, RESCALE_QUALITY_JPEG);
+						$data = $image->get('jpeg', true, $quality);
 						break;
 					case 'png':
-						$data = $image->get('png', true, RESCALE_QUALITY_PNG);
+						$data = $image->get('png', true, $quality);
 						break;
 					case 'gif':
-						$data = $image->get('gif', true, RESCALE_QUALITY_GIF);
+						$data = $image->get('gif', true, $quality);
 						break;
 				}
 
