@@ -7,9 +7,9 @@ class Cache {
 	protected $size;
 	protected $modified;
 
-	public function __construct($path, $suffix, $dimensions) {
+	public function __construct($path, $suffix, $dimensions, $quality) {
 		$this->source   = RESCALE_SOURCE . $path;
-		$this->target   = RESCALE_TARGET . $path . '/'. $dimensions->width . 'x' . $dimensions->height . '.' . $suffix;
+		$this->target   = RESCALE_TARGET . $path . '/'. $dimensions->width . 'x' . $dimensions->height . '.' . $quality . '.' . $suffix;
 		$this->modified = filemtime($this->source);
 	}
 
@@ -35,6 +35,7 @@ class Cache {
 				break;
 			case 'size':
 				return filesize($this->target);
+
 				break;
 		}
 	}
