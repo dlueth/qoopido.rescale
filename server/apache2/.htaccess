@@ -1,0 +1,9 @@
+# Example on how to use Qoopido.rescale on Apache2
+# Note: Please adjust all paths accordingly
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteBase /
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.+?).([0-9]+)x([0-9]+)@([0-9]+).(jp(e?)g|png|gif)$ qoopido.rescale/service/index.php?rescale[file]=/$1.$5&rescale[width]=$2&rescale[height]=$3&rescale[dpr]=$4 [QSA,L,NC]
+</IfModule>
