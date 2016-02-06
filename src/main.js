@@ -35,12 +35,7 @@
 						});
 						url         = candidate.url.replace(matchUrl, '$1.' + Math.round(dimensions.width) + 'x' + Math.round(dimensions.height) + '@' + Math.round(dimensions.scale) + '.$2');
 
-						image
-							.setStyle('visibility', 'hidden')
-							.one('load', function() {
-								image.setStyle('visibility', 'visible');
-							})
-							.setAttribute('src', url);
+						image.setAttribute('src', url);
 					}
 
 					setRatio.call(self, candidate.ratio);
@@ -106,19 +101,20 @@
 		function Adapt(element, settings) {
 			var self = DomElementAppear.prototype.constructor.call(this, element, settings),
 				uuid = self.uuid,
-				temp, container, width, height, caption, properties;
+				temp, container, width, height, caption, image, properties;
 
 			container  = new DomElement('<div />').setStyles({ position: 'relative', display: 'block', width: '100%', height: 0, padding: 0 }).appendTo(self);
 			width      = (temp = self.getChildren('[itemprop="width"]')[0]) ? parseInt(temp.getAttribute('content')) : null;
 			height     = (temp = self.getChildren('[itemprop="height"]')[0]) ? parseInt(temp.getAttribute('content')) : null;
 			caption    = (temp = self.getChildren('[itemprop="caption"]')[0]) ? temp.getAttribute('content') : null;
+			image      = new DomElement('<img />', { src: placeholder, alt: caption || '' }, { position: 'absolute', display: 'block', width: '100%', height: '100%', top: '0', left: '0', margin: '0', padding: '0' }).appendTo(container);
 
 			properties = storage[uuid] = {
 				visible:    false,
 				settings:   functionMerge({}, prototype.settings, settings),
 				ratio:      (width && height) ? height / width : null,
 				container:  container,
-				image:      new DomElement('<img />', { src: placeholder, alt: caption || '' }, { position: 'absolute', display: 'block', width: '100%', height: '100%', top: '0', left: '0', margin: '0', padding: '0' }).appendTo(container),
+				image:      image,
 				candidates: processSources.call(self),
 				caption:    caption
 			};
@@ -129,6 +125,10 @@
 				.call(self)
 				.on('appear disappear', function(event) {
 					properties.visible = (event.type === 'appear');
+
+					if(!properties.visible) {
+						image.setAttribute('src', placeholder);
+					}
 
 					localOnResize.call(self);
 				});
