@@ -3,149 +3,58 @@ namespace Rescale;
 
 class Image {
 	protected $image;
-	protected $temporary = NULL;
-	protected $imageconvolution = NULL;
-	protected $imagefilter = NULL;
-	protected $imagelayereffect = NULL;
-	protected $curl = NULL;
-	protected $urlfopen = NULL;
-	protected $exif = NULL;
 
 	public    $width;
 	public    $height;
 
 	public function __construct($image = NULL) {
-		$this->imageconvolution = function_exists('imageconvolution');
-		$this->imagefilter      = function_exists('imagefilter');
-		$this->imagelayereffect = function_exists('imagelayereffect');
-		$this->curl             = extension_loaded('curl');
-		$this->urlfopen         = (bool) ini_get('allow_url_fopen');
-		$this->exif             = extension_loaded('exif');
-		$this->temporary        = array('images' => array(), 'colors' => array());
-
 		if(!empty($image) && is_file($image) && is_readable($image)) {
-			$size = getimagesize($image);
+			$type = strtolower(preg_replace('/^.+\.(jpe?g|png|gif)$/i', '\1', $image));
+			$type = ($type === 'jpg') ? 'jpeg' : $type;
 
-			if($size != false) {
-				switch($size[2]) {
-					case 1: // GIF
-						$image = imagecreatefromgif($image);
-						break;
-					case 2: // JPEG
-						if($this->exif === true) {
-							$exif  = exif_read_data($image);
-							$image = imagecreatefromjpeg($image);
-
-							unset($exif);
-						} else {
-							$image = imagecreatefromjpeg($image);
-						}
-
-						break;
-					case 3: // PNG
-						$image = imagecreatefrompng($image);
-						break;
-				}
-
-				$this->_set($image, $size[0], $size[1]);
+			switch($type) {
+				case 'gif':
+					$this->image = imagecreatefromgif($image);
+					break;
+				case 'jpeg':
+					$this->image = imagecreatefromjpeg($image);
+					break;
+				case 'png':
+					$this->image = imagecreatefrompng($image);
+					break;
 			}
 
-			unset($size);
-		}
+			imagealphablending($this->image, false);
+			imagesavealpha($this->image, true);
 
-		unset($image);
-	}
-
-	private function _set(&$image, $width = NULL, $height = NULL) {
-		$width  = ($width === NULL) ? $this->width : $width;
-		$height = ($height === NULL) ? $this->height : $height;
-
-		if($this->image !== NULL) {
-			imagedestroy($this->image);
-		}
-
-		$this->image = imagecreatetruecolor($width, $height);
-
-		imagealphablending($this->image, false);
-		imagesavealpha($this->image, true);
-		imagecopy($this->image, $image, 0, 0, 0, 0, $width, $height);
-
-		$this->width  = $width;
-		$this->height = $height;
-
-		$this->_clean();
-	}
-
-	private function _clean() {
-		if($this->temporary !== NULL) {
-			foreach($this->temporary['colors'] as $k => $v) {
-				unset($this->temporary['colors'][$k]);
-			}
-
-			foreach($this->temporary['images'] as $k => $v) {
-				imagedestroy($v);
-				unset($this->temporary['images'][$k]);
-			}
+			$this->width  = imagesx($this->image);
+			$this->height = imagesy($this->image);
 		}
 	}
 
-	public function resize($size, $mode = 3) {
-		$size = (is_scalar($size)) ? array_fill(0, 2, $size) : $size;
+	public function resize($width, $height) {
+		$ratio = array($width / $this->width, $height / $this->height);
 
-		switch($mode) {
-			case 1:
-				$size[1] = (int) round($this->height * ($size[0] / $this->width));
-				break;
-			case 2:
-				$size[0] = (int) round($this->width * ($size[1] / $this->height));
-				break;
-			case 3:
-				$ratio = array($size[0] / $this->width, $size[1] / $this->height);
-
-				if($ratio[0] > $ratio[1]) {
-					// portrait
-					$size[1] = (int) round($this->height * $ratio[0]);
-				} else {
-					// landscape
-					$size[0] = (int) round($this->width * $ratio[1]);
-				}
-
-				unset($ratio);
-
-				break;
-			case 4:
-				$ratio = array($size[0] / $this->width, $size[1] / $this->height);
-
-				if($ratio[0] > $ratio[1]) {
-					// portrait
-					$size[0] = (int) round($this->width * $ratio[1]);
-				} else {
-					// landscape
-					$size[1] = (int) round($this->height * $ratio[0]);
-				}
-
-				unset($ratio);
-
-				break;
-			case 5:
-				$size[0] = (int) round($this->width * $size[0]);
-				$size[1] = (int) round($this->height * $size[1]);
-
-				break;
+		if($ratio[0] > $ratio[1]) {
+			// portrait
+			$height = (int) round($this->height * $ratio[0]);
+		} else {
+			// landscape
+			$width = (int) round($this->width * $ratio[1]);
 		}
 
 		// process
-		if($size[0] != $this->width || $size[1] != $this->height) {
-			$this->temporary['images']['final'] = imagecreatetruecolor($size[0], $size[1]);
+		if($width != $this->width || $height != $this->height) {
+			$temp = imagecreatetruecolor($width, $height);
 
-			imagealphablending($this->temporary['images']['final'], false);
-			imagesavealpha($this->temporary['images']['final'], true);
-			imagecopyresampled($this->temporary['images']['final'], $this->image, 0, 0, 0, 0, $size[0], $size[1], $this->width, $this->height);
+			imagealphablending($temp, false);
+			imagesavealpha($temp, true);
+			imagecopyresampled($temp, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
 
-			$this->_set($this->temporary['images']['final'], $size[0], $size[1]);
+			$this->image  = $temp;
+			$this->width  = $width;
+			$this->height = $height;
 		}
-
-		unset($size, $mode, $result);
 
 		return $this;
 	}
@@ -159,39 +68,27 @@ class Image {
 			$y = floor($this->height / 2 - $height / 2);
 		}
 
-		$this->temporary['images']['final'] = imagecreatetruecolor($width, $height);
+		$temp = imagecreatetruecolor($width, $height);
 
-		imagealphablending($this->temporary['images']['final'], false);
-		imagesavealpha($this->temporary['images']['final'], true);
-		imagecopy($this->temporary['images']['final'], $this->image, 0, 0, $x, $y, $width, $height);
+		imagealphablending($temp, false);
+		imagesavealpha($temp, true);
+		imagecopy($temp, $this->image, 0, 0, $x, $y, $width, $height);
 
-		$this->_set($this->temporary['images']['final'], $width, $height);
-
-		unset($width, $height, $x, $y, $result);
+		$this->image  = $temp;
+		$this->width  = $width;
+		$this->height = $height;
 
 		return $this;
 	}
 
-	public function sharpen($amount = 50) {
-		$amount = 100 - ($amount / (100 / 80));
-
-		$this->temporary['images']['final'] = imagecreatetruecolor($this->width, $this->height);
-
-		imagealphablending($this->temporary['images']['final'], false);
-		imagesavealpha($this->temporary['images']['final'], true);
-		imagecopy($this->temporary['images']['final'], $this->image, 0, 0, 0, 0, $this->width, $this->height);
-
-		$matrix = array(
-			array(-1, -2, -1),
-			array(-2, $amount, -2),
-			array(-1, -2, -1)
+	public function sharpen() {
+		$sharpen = array(
+			array(-1, -1,  -1),
+			array(-1, 24, -1),
+			array(-1, -1,  -1),
 		);
 
-		imageconvolution($this->temporary['images']['final'], $matrix, $amount - 12, 0);
-
-		$this->_set($this->temporary['images']['final']);
-
-		unset($amount, $result, $matrix);
+		imageconvolution($this->image, $sharpen, array_sum(array_map('array_sum', $sharpen)), 0);
 
 		return $this;
 	}
@@ -225,12 +122,8 @@ class Image {
 				imagecolormatch($this->image, $temp);
 				imagegif($temp);
 
-				unset($temp);
-
 				break;
 		}
-
-		unset($type, $interlace, $quality, $filter, $result);
 
 		return trim(ob_get_clean());
 	}
