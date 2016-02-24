@@ -15,7 +15,7 @@ if(defined('RESCALE_LIMIT_DPR') === false) {
 }
 
 if(defined('RESCALE_QUALITY_JPEG') === false) {
-	define('RESCALE_QUALITY_JPEG', 70);
+	define('RESCALE_QUALITY_JPEG', 80);
 }
 
 if(defined('RESCALE_QUALITY_PNG') === false) {
@@ -99,8 +99,10 @@ try {
 
 			if(($data = $cache->get()) === false) {
 				$image
-					->resize(array($dimensions->width, $dimensions->height))
-					->crop($dimensions->width, $dimensions->height);
+					->resize($dimensions->width, $dimensions->height)
+					->crop($dimensions->width, $dimensions->height)
+					->sharpen()
+				;
 
 				switch($type) {
 					case 'jpeg':
