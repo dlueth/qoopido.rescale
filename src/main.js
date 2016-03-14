@@ -39,7 +39,9 @@
 						image
 							.setStyle('visibility', 'hidden')
 							.one('load', function() {
-								image.setStyle('visibility', 'visible');
+								image
+									.setStyle('visibility', 'visible')
+									.emit('rescale', candidate.url, url);
 							})
 							.setAttribute('src', url);
 					}
@@ -105,7 +107,7 @@
 			return self;
 		}
 
-		function Adapt(element, settings) {
+		function Rescale(element, settings) {
 			var self = DomElementAppear.prototype.constructor.call(this, element, settings),
 				uuid = self.uuid,
 				temp, container, width, height, quality, caption, properties;
@@ -141,7 +143,7 @@
 		new DomElement(global)
 			.on('resize orientationchange', functionDebounce(globalOnResize));
 
-		prototype = DomElementAppear.extend(Adapt);
+		prototype = DomElementAppear.extend(Rescale);
 		prototype.settings = {
 			modifier: function(dimensions) {
 				/*
