@@ -37,13 +37,8 @@
 						url         = candidate.url.replace(matchUrl, '$1.' + Math.round(dimensions.width) + 'x' + Math.round(dimensions.height) + '@' + Math.round(dimensions.scale) + (quality ? '.' + quality : '') + '.$2');
 
 						image
-							.setStyle('visibility', 'hidden')
-							.one('load', function() {
-								image
-									.setStyle('visibility', 'visible')
-									.emit('rescale', candidate.url, url);
-							})
-							.setAttribute('src', url);
+							.setAttribute('src', url)
+							.emit('rescale', candidate.url, url);
 					}
 
 					setRatio.call(self, candidate.ratio);
