@@ -94,8 +94,8 @@
 
 		function setRatio(ratio) {
 			var self       = this,
-				parent     = self.getParent(),
-				properties = storage[self.uuid];
+				properties = storage[self.uuid],
+				parent     = properties.parent;
 
 			properties.container.setStyle('paddingBottom', ((ratio || properties.ratio || parent.offsetHeight / parent.offsetWidth) * 100) + '%');
 
@@ -105,19 +105,25 @@
 		function Rescale(element, settings) {
 			var self = DomElementAppear.prototype.constructor.call(this, element, settings),
 				uuid = self.uuid,
-				temp, container, width, height, quality, caption, properties;
+				temp, parent, container, width, height, quality, caption, properties;
 
+			parent     = self.getParent();
 			container  = new DomElement('<div />').setStyles({ position: 'relative', display: 'block', width: '100%', height: 0, padding: 0 }).appendTo(self);
 			width      = (temp = self.getChildren('[itemprop="width"]')[0]) ? parseInt(temp.getAttribute('content')) : null;
 			height     = (temp = self.getChildren('[itemprop="height"]')[0]) ? parseInt(temp.getAttribute('content')) : null;
 			quality    = (temp = self.getChildren('[itemprop="quality"]')[0]) ? parseInt(temp.getAttribute('content')) : null;
 			caption    = (temp = self.getChildren('[itemprop="caption"]')[0]) ? temp.getAttribute('content') : null;
 
+			while(parent.offsetHeight === 0) {
+				parent = parent.parentNode;
+			}
+
 			properties = storage[uuid] = {
 				visible:    false,
 				settings:   functionMerge({}, prototype.settings, settings),
 				ratio:      (width && height) ? height / width : null,
 				quality:    quality,
+				parent:     parent,
 				container:  container,
 				image:      new DomElement('<img />', { src: placeholder, alt: caption || '' }, { position: 'absolute', display: 'block', width: '100%', height: '100%', top: '0', left: '0', margin: '0', padding: '0' }).appendTo(container),
 				candidates: processSources.call(self),
