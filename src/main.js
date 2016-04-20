@@ -27,7 +27,7 @@
 					image = properties.image;
 
 					if(properties.visible) {
-						boundingbox = image.element.getBoundingClientRect();
+						boundingbox = image.node.getBoundingClientRect();
 						dimensions  = properties.settings.modifier({
 							width:  boundingbox.width,
 							height: boundingbox.width * (candidate.ratio || properties.ratio || parent.offsetHeight / parent.offsetWidth),
@@ -56,7 +56,7 @@
 				element, i, match;
 
 			if(matches.length) {
-				element = self.element;
+				element = self.node;
 
 				for(i = 0; match = matches[i]; i++) {
 					if(match === element) {
