@@ -12,7 +12,7 @@
 			var i = 0, instance;
 
 			for(; instance = instances[i]; i++) {
-				localOnResize.call(instance);
+				instance.isVisible() && localOnResize.call(instance);
 			}
 		}
 
@@ -33,7 +33,7 @@
 							height: boundingbox.width * (candidate.ratio || properties.ratio || parent.offsetHeight / parent.offsetWidth),
 							scale:  (global.devicePixelRatio || 1) * 100
 						});
-						quality     = candidate.quality || properties.quality,
+						quality     = candidate.quality || properties.quality;
 						url         = candidate.url.replace(matchUrl, '$1.' + Math.round(dimensions.width) + 'x' + Math.round(dimensions.height) + '@' + Math.round(dimensions.scale) + (quality ? '.' + quality : '') + '.$2');
 
 						image
