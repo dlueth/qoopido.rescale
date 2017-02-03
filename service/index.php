@@ -98,21 +98,43 @@ try {
 			$cache      = new \Rescale\Cache($path, $type, $dimensions, $quality);
 
 			if(($data = $cache->get()) === false) {
-				$image
-					->resize($dimensions->width, $dimensions->height)
-					->crop($dimensions->width, $dimensions->height)
-					->sharpen()
-				;
+				if($image->animated === false) {
+					$image
+						->resize($dimensions->width, $dimensions->height)
+						->crop($dimensions->width, $dimensions->height)
+						->sharpen()
+					;
+				}
 
 				switch($type) {
 					case 'jpeg':
-						$data = $image->get('jpeg', true, $quality);
+						$data = $image
+							->resize($dimensions->width, $dimensions->height)
+							->crop($dimensions->width, $dimensions->height)
+							->sharpen()
+							->get('jpeg', true, $quality)
+						;
 						break;
 					case 'png':
-						$data = $image->get('png', true, $quality);
+						$data = $image
+							->resize($dimensions->width, $dimensions->height)
+							->crop($dimensions->width, $dimensions->height)
+							->sharpen()
+							->get('png', true, $quality)
+						;
 						break;
 					case 'gif':
-						$data = $image->get('gif', true, $quality);
+						if($image->animated === false && $image->transparent === false) {
+							$data = $image
+								->resize($dimensions->width, $dimensions->height)
+								->crop($dimensions->width, $dimensions->height)
+								->sharpen()
+								->get('gif', true, $quality)
+							;
+						} else {
+							// leave animated and/or transparent GIFs as is
+							$data = file_get_contents($source);
+						}
 						break;
 				}
 

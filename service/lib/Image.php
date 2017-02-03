@@ -6,6 +6,8 @@ class Image {
 
 	public    $width;
 	public    $height;
+	public    $animated    = false;
+	public    $transparent = false;
 
 	public function __construct($image = NULL) {
 		if(!empty($image) && is_file($image) && is_readable($image)) {
@@ -14,7 +16,9 @@ class Image {
 
 			switch($type) {
 				case 'gif':
-					$this->image = imagecreatefromgif($image);
+					$this->image       = imagecreatefromgif($image);
+					$this->animated    = $this->_isAnimated($image);
+					$this->transparent = (imagecolortransparent($this->image) >= 0) ? true : false;
 					break;
 				case 'jpeg':
 					$this->image = imagecreatefromjpeg($image);
@@ -30,6 +34,20 @@ class Image {
 			$this->width  = imagesx($this->image);
 			$this->height = imagesy($this->image);
 		}
+	}
+
+	private function _isAnimated($filename) {
+		$handle = fopen($filename, 'rb');
+		$frames = 0;
+
+		while(!feof($handle) && $frames < 2) {
+			$chunk   = fread($handle, 1024 * 100);
+			$frames += preg_match_all('#\x00\x21\xF9\x04.{4}\x00(\x2C|\x21)#s', $chunk, $matches);
+		}
+
+		fclose($handle);
+
+		return $frames > 1;
 	}
 
 	public function resize($width, $height) {
