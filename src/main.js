@@ -4,7 +4,7 @@
 	function definition(DomElement, DomElementAppear, ComponentSense, functionMerge, functionDebounce) {
 		var storage     = {},
 			instances   = [],
-			matchUrl    = /(.+?).(jpe?g|png|gif)$/,
+			matchUrl    = /(.+?).(jpe?g|png|gif)$/i,
 			placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=',
 			prototype;
 
