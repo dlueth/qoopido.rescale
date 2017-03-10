@@ -5,8 +5,7 @@
 		var storage     = {},
 			instances   = [],
 			matchUrl    = /(.+?).(jpe?g|png|gif)$/i,
-			placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=',
-			prototype;
+			placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=';
 
 		function globalOnResize() {
 			var i = 0, instance;
@@ -120,7 +119,7 @@
 
 			properties = storage[uuid] = {
 				visible:    false,
-				settings:   functionMerge({}, prototype.settings, settings),
+				settings:   functionMerge({}, Rescale.settings, settings),
 				ratio:      (width && height) ? height / width : null,
 				quality:    quality,
 				parent:     parent,
