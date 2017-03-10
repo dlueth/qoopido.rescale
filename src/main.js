@@ -103,7 +103,7 @@
 		}
 
 		function Rescale(element, settings) {
-			var self = DomElementAppear.prototype.constructor.call(this, element, settings),
+			var self = DomElementAppear.call(this, element, settings),
 				uuid = self.uuid,
 				temp, parent, container, width, height, quality, caption, properties;
 
@@ -140,26 +140,25 @@
 					localOnResize.call(self);
 				});
 		}
-
-		new DomElement(global)
-			.on('resize orientationchange', functionDebounce(globalOnResize));
-
-		prototype = DomElementAppear.extend(Rescale);
-		prototype.settings = {
+		
+		Rescale.settings = {
 			modifier: function(dimensions) {
 				/*
-				var ratio = dimensions.height / dimensions.width;
-
-				dimensions.width  = Math.ceil(dimensions.width / 50) * 50;
-				dimensions.height = dimensions.width * ratio;
-				*/
+				 var ratio = dimensions.height / dimensions.width;
+				 
+				 dimensions.width  = Math.ceil(dimensions.width / 50) * 50;
+				 dimensions.height = dimensions.width * ratio;
+				 */
 				dimensions.scale  = Math.min(200, dimensions.scale);
-
+				
 				return dimensions;
 			}
 		};
-
-		return prototype;
+		
+		new DomElement(global)
+			.on('resize orientationchange', functionDebounce(globalOnResize));
+		
+		return Rescale.extends(DomElementAppear);
 	}
 
 	provide([ '/nucleus/dom/element', '/nucleus/dom/element/appear', '/nucleus/component/sense', '/nucleus/function/merge', '/nucleus/function/debounce' ], definition);
